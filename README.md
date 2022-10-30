@@ -8,22 +8,6 @@ Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
-add
-
-```json
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Synida/yii2-oauth2-server.git"
-        }
-    ],
-    "require": {
-      "filsh/yii2-oauth2-server": "dev-master",
-    }
-```
-
-to the require section of your composer.json.
-
 To use this extension,  simply add the following code in your application configuration as a new module:
 
 ```php
