@@ -1,19 +1,23 @@
 <?php
 
+use yii\db\Migration;
 use yii\db\Schema;
+use yii\db\Transaction;
 
-class m140501_075311_add_oauth2_server extends \yii\db\Migration
+class m140501_075311_add_oauth2_server extends Migration
 {
-
-    public function mysql($yes,$no='') {
+    public function mysql($yes, $no='')
+    {
         return $this->db->driverName === 'mysql' ? $yes : $no;
     }
 
-    public function setPrimaryKey($columns) {
+    public function setPrimaryKey($columns)
+    {
         return 'PRIMARY KEY (' . $this->db->getQueryBuilder()->buildColumns($columns) . ')';
     }
 
-    public function foreignKey($columns,$refTable,$refColumns,$onDelete = null,$onUpdate = null) {
+    public function foreignKey($columns, $refTable, $refColumns, $onDelete = null, $onUpdate = null)
+    {
         $builder = $this->db->getQueryBuilder();
         $sql = ' FOREIGN KEY (' . $builder->buildColumns($columns) . ')'
             . ' REFERENCES ' . $this->db->quoteTableName($refTable)
@@ -38,6 +42,11 @@ class m140501_075311_add_oauth2_server extends \yii\db\Migration
         $on_update_now  = $this->mysql("ON UPDATE $now");
 
         $transaction = $this->db->beginTransaction();
+
+        if (!$transaction instanceof Transaction) {
+            return false;
+        }
+
         try {
             $this->createTable('{{%oauth_clients}}', [
                 'client_id' => Schema::TYPE_STRING . '(32) NOT NULL',
@@ -56,7 +65,7 @@ class m140501_075311_add_oauth2_server extends \yii\db\Migration
                 'expires' => Schema::TYPE_TIMESTAMP . " NOT NULL DEFAULT $now $on_update_now",
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
                 $this->setPrimaryKey('access_token'),
-                $this->foreignKey('client_id','{{%oauth_clients}}','client_id','CASCADE','CASCADE'),
+                $this->foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_refresh_tokens}}', [
@@ -66,7 +75,7 @@ class m140501_075311_add_oauth2_server extends \yii\db\Migration
                 'expires' => Schema::TYPE_TIMESTAMP . " NOT NULL DEFAULT $now $on_update_now",
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
                 $this->setPrimaryKey('refresh_token'),
-                $this->foreignKey('client_id','{{%oauth_clients}}','client_id','CASCADE','CASCADE'),
+                $this->foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_authorization_codes}}', [
@@ -77,7 +86,7 @@ class m140501_075311_add_oauth2_server extends \yii\db\Migration
                 'expires' => Schema::TYPE_TIMESTAMP . " NOT NULL DEFAULT $now $on_update_now",
                 'scope' => Schema::TYPE_STRING . '(2000) DEFAULT NULL',
                 $this->setPrimaryKey('authorization_code'),
-                $this->foreignKey('client_id','{{%oauth_clients}}','client_id','CASCADE','CASCADE'),
+                $this->foreignKey('client_id', '{{%oauth_clients}}', 'client_id', 'CASCADE', 'CASCADE'),
             ], $tableOptions);
 
             $this->createTable('{{%oauth_scopes}}', [
@@ -126,6 +135,11 @@ class m140501_075311_add_oauth2_server extends \yii\db\Migration
     public function down()
     {
         $transaction = $this->db->beginTransaction();
+
+        if (!$transaction instanceof Transaction) {
+            return false;
+        }
+
         try {
             $this->dropTable('{{%oauth_users}}');
             $this->dropTable('{{%oauth_jwt}}');

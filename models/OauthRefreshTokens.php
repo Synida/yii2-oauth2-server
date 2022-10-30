@@ -2,7 +2,7 @@
 
 namespace filsh\yii2\oauth2server\models;
 
-use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "oauth_refresh_tokens".
@@ -55,10 +55,10 @@ class OauthRefreshTokens extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getClient()
     {
-        return $this->hasOne(OauthClients::className(), ['client_id' => 'client_id']);
+        return $this->hasOne(OauthClients::class, ['client_id' => 'client_id']);
     }
 }

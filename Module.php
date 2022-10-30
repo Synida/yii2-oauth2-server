@@ -3,6 +3,8 @@
 namespace filsh\yii2\oauth2server;
 
 use \Yii;
+use yii\base\InvalidConfigException;
+use yii\di\NotInstantiableException;
 use yii\helpers\ArrayHelper;
 use yii\i18n\PhpMessageSource;
 
@@ -61,7 +63,7 @@ class Module extends \yii\base\Module
     /**
      * @var bool whether to use JWT tokens
      */
-    public $useJwtToken = false;//ADDED
+    public $useJwtToken = false;
 
     /**
      * @inheritdoc
@@ -75,20 +77,19 @@ class Module extends \yii\base\Module
     /**
      * Gets Oauth2 Server
      *
-     * @return \filsh\yii2\oauth2server\Server
+     * @return Server
      * @throws \ReflectionException
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\di\NotInstantiableException
+     * @throws InvalidConfigException
+     * @throws NotInstantiableException
      */
     public function getServer()
     {
-        if(!$this->has('server')) {
+        if (!$this->has('server')) {
             $storages = [];
 
-            if($this->useJwtToken)
-            {
+            if ($this->useJwtToken) {
                 if(!array_key_exists('access_token', $this->storageMap) || !array_key_exists('public_key', $this->storageMap)) {
-                        throw new \yii\base\InvalidConfigException('access_token and public_key must be set or set useJwtToken to false');
+                        throw new InvalidConfigException('access_token and public_key must be set or set useJwtToken to false');
                 }
                 //define dependencies when JWT is used instead of normal token
                 \Yii::$container->clear('public_key'); //remove old definition
@@ -99,14 +100,14 @@ class Module extends \yii\base\Module
                 \Yii::$container->set('access_token', $this->storageMap['access_token']);
             }
 
-            foreach(array_keys($this->storageMap) as $name) {
+            foreach (array_keys($this->storageMap) as $name) {
                 $storages[$name] = \Yii::$container->get($name);
             }
 
             $grantTypes = [];
-            foreach($this->grantTypes as $name => $options) {
-                if(!isset($storages[$name]) || empty($options['class'])) {
-                    throw new \yii\base\InvalidConfigException('Invalid grant types configuration.');
+            foreach ($this->grantTypes as $name => $options) {
+                if (!isset($storages[$name]) || empty($options['class'])) {
+                    throw new InvalidConfigException('Invalid grant types configuration.');
                 }
 
                 $class = $options['class'];
@@ -123,7 +124,7 @@ class Module extends \yii\base\Module
                 $this,
                 $storages,
                 [
-                    'use_jwt_access_tokens' => $this->useJwtToken,//ADDED
+                    'use_jwt_access_tokens' => $this->useJwtToken,
                     'token_param_name' => $this->tokenParamName,
                     'access_lifetime' => $this->tokenAccessLifetime,
                     /** add more ... */
@@ -139,7 +140,7 @@ class Module extends \yii\base\Module
 
     public function getRequest()
     {
-        if(!ArrayHelper::keyExists('request', $this->getComponents())) {
+        if (!ArrayHelper::keyExists('request', $this->getComponents())) {
             $this->set('request', Request::createFromGlobals());
         }
         return $this->get('request');
@@ -147,7 +148,7 @@ class Module extends \yii\base\Module
 
     public function getResponse()
     {
-        if(!ArrayHelper::keyExists('request', $this->getComponents())) {
+        if (!ArrayHelper::keyExists('request', $this->getComponents())) {
             $this->set('response', new Response());
         }
         return $this->get('response');
@@ -156,13 +157,14 @@ class Module extends \yii\base\Module
     /**
      * Register translations for this module
      *
-     * @return array
+     * @return void
+     * @throws InvalidConfigException
      */
     public function registerTranslations()
     {
-        if(!isset(Yii::$app->get('i18n')->translations['modules/oauth2/*'])) {
+        if (!isset(Yii::$app->get('i18n')->translations['modules/oauth2/*'])) {
             Yii::$app->get('i18n')->translations['modules/oauth2/*'] = [
-                'class'    => PhpMessageSource::className(),
+                'class'    => PhpMessageSource::class,
                 'basePath' => __DIR__ . '/messages',
             ];
         }
