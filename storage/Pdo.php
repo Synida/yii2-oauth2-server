@@ -2,6 +2,9 @@
 
 namespace filsh\yii2\oauth2server\storage;
 
+use yii\base\InvalidConfigException;
+use yii\db\Connection;
+
 class Pdo extends \OAuth2\Storage\Pdo
 {
     public $dsn;
@@ -14,14 +17,14 @@ class Pdo extends \OAuth2\Storage\Pdo
     
     public function __construct($connection = null, $config = array())
     {
-        if($connection === null) {
-            if($this->connection !== null && \Yii::$app->has($this->connection)) {
+        if ($connection === null) {
+            if ($this->connection !== null && \Yii::$app->has($this->connection)) {
                 $db = \Yii::$app->get($this->connection);
-                if(!($db instanceof \yii\db\Connection)) {
-                    throw new \yii\base\InvalidConfigException('Connection component must implement \yii\db\Connection.');
+                if (!($db instanceof Connection)) {
+                    throw new InvalidConfigException('Connection component must implement \yii\db\Connection.');
                 }
                 
-                if(!$db->getIsActive()) {
+                if (!$db->getIsActive()) {
                     $db->open();
                 }
                 

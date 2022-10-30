@@ -2,7 +2,7 @@
 
 namespace filsh\yii2\oauth2server\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "oauth_scopes".
@@ -10,7 +10,7 @@ use Yii;
  * @property string $scope
  * @property integer $is_default
  */
-class OauthScopes extends \yii\db\ActiveRecord
+class OauthScopes extends ActiveRecord
 {
     /**
      * @inheritdoc

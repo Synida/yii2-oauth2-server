@@ -2,11 +2,15 @@
 
 namespace filsh\yii2\oauth2server\controllers;
 
-use Yii;
 use yii\helpers\ArrayHelper;
 use filsh\yii2\oauth2server\filters\ErrorToExceptionFilter;
+use yii\rest\Controller;
 
-class RestController extends \yii\rest\Controller
+/**
+ * Class RestController
+ * @package filsh\yii2\oauth2server\controllers
+ */
+class RestController extends Controller
 {
     /**
      * @inheritdoc
@@ -15,7 +19,7 @@ class RestController extends \yii\rest\Controller
     {
         return ArrayHelper::merge(parent::behaviors(), [
             'exceptionFilter' => [
-                'class' => ErrorToExceptionFilter::className()
+                'class' => ErrorToExceptionFilter::class
             ],
         ]);
     }

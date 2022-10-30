@@ -2,7 +2,8 @@
 
 namespace filsh\yii2\oauth2server\models;
 
-use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "oauth_authorization_codes".
@@ -16,7 +17,7 @@ use Yii;
  *
  * @property OauthClients $client
  */
-class OauthAuthorizationCodes extends \yii\db\ActiveRecord
+class OauthAuthorizationCodes extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -58,10 +59,10 @@ class OauthAuthorizationCodes extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getClient()
     {
-        return $this->hasOne(OauthClients::className(), ['client_id' => 'client_id']);
+        return $this->hasOne(OauthClients::class, ['client_id' => 'client_id']);
     }
 }
