@@ -8,7 +8,7 @@ class m140501_075311_add_oauth2_server extends Migration
 {
     public function mysql($yes, $no='')
     {
-        return $this->db->driverName === 'mysql' ? $yes : $no;
+        return in_array($this->db->driverName, ['mysql', 'mariadb'], true) ? $yes : $no;
     }
 
     public function setPrimaryKey($columns)
